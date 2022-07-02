@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
 public class HelloController {
 
@@ -35,21 +36,26 @@ public class HelloController {
 
     @FXML
     void onEnterPress(KeyEvent event) {
-
+        System.out.println("Enter" +
+                " pressed");
     }
 
     @FXML
     void onSendButtonClick(ActionEvent event) {
+        System.out.println("Send pressed");
 
     }
 
+
+    @FXML
+    void onClosePressed(ActionEvent event) {
+        System.exit(0);
+    }
+
+
+
     @FXML
     void initialize() {
-        assert menuItemClose != null : "fx:id=\"menuItemClose\" was not injected: check your FXML file 'hello-view.fxml'.";
-        assert menuItemAbout != null : "fx:id=\"menuItemAbout\" was not injected: check your FXML file 'hello-view.fxml'.";
-        assert conversationTextField != null : "fx:id=\"conversationTextField\" was not injected: check your FXML file 'hello-view.fxml'.";
-        assert textEnterField != null : "fx:id=\"textEnterField\" was not injected: check your FXML file 'hello-view.fxml'.";
-        assert sendButton != null : "fx:id=\"sendButton\" was not injected: check your FXML file 'hello-view.fxml'.";
 
     }
 }
