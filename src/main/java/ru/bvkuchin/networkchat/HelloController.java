@@ -7,20 +7,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import ru.bvkuchin.networkchat.components.CompletedTab;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 public class HelloController {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, ''yy HH:mm:ss");
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
 
     @FXML
     private MenuItem menuItemClose;
@@ -36,7 +28,6 @@ public class HelloController {
 
     @FXML
     private ListView<String> usersList;
-
 
     @FXML
     void onSendButtonClick(ActionEvent event) {
@@ -59,12 +50,7 @@ public class HelloController {
     }
 
     @FXML
-    void onUserListClicked(MouseEvent event) {
-        if (event.getButton().equals(MouseButton.PRIMARY)) {
-
-            System.out.println("onUserListClicked method");
-        }
-    }
+    void onUserListClicked(MouseEvent event) { System.out.println("onUserListClicked method"); }
 
     @FXML
     void initialize() {
@@ -91,8 +77,6 @@ public class HelloController {
                 }
             }
         });
-
-
 
     }
 }
