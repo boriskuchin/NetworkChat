@@ -50,10 +50,8 @@ public class HelloController {
             conversationList.getItems().add(String.format("%s: %n%s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
             textEnterField.setText("");
             conversationList.scrollTo(conversationList.getItems().size() - 1);
-
         }
     }
-
 
     @FXML
     void onClosePressed(ActionEvent event) {
@@ -67,8 +65,6 @@ public class HelloController {
             System.out.println("onUserListClicked method");
         }
     }
-
-
 
     @FXML
     void initialize() {
