@@ -20,9 +20,11 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(rootPane);
         stage.setTitle("Network chat!");
         stage.setScene(scene);
+
+//        вытаскиваем экземпляр контроллера из лоудера
         HelloController controller = root.getController();
 
-        
+//        Добавеление слушателя комбинаций на сцену
         KeyCombination C_Enter = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
         stage.addEventFilter(KeyEvent.KEY_PRESSED, evt -> {
             if (C_Enter.match(evt)) {

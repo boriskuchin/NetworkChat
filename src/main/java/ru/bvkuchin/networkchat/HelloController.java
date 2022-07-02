@@ -1,16 +1,16 @@
 package ru.bvkuchin.networkchat;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import ru.bvkuchin.networkchat.components.CompletedTab;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
-import javafx.scene.input.KeyEvent;
 
 public class HelloController {
 
@@ -26,22 +26,17 @@ public class HelloController {
     private MenuItem menuItemClose;
 
     @FXML
-    private MenuItem menuItemAbout;
-
-    @FXML
-    private ListView<String> conversationList;
-
-    @FXML
     private TextArea textEnterField;
 
     @FXML
     private Button sendButton;
 
     @FXML
-    void onEnterPress(KeyEvent event) {
-        System.out.println("Enter" +
-                " pressed");
-    }
+    private TabPane tabPane;
+
+    @FXML
+    private ListView<String> usersList;
+
 
     @FXML
     void onSendButtonClick(ActionEvent event) {
@@ -49,9 +44,13 @@ public class HelloController {
     }
 
     protected void sendMessage() {
-        if (textEnterField.getText().length() != 0) {
-            conversationList.getItems().add( dateFormat.format(new Date()).toString() + ": " + textEnterField.getText());
+        CompletedTab tab = (CompletedTab) tabPane.getSelectionModel().getSelectedItem();
+        if ((textEnterField.getText().length() != 0) && (tabPane.getSelectionModel().getSelectedItem() != null)) {
+            ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
+            conversationList.getItems().add(String.format("%s: %n%s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
             textEnterField.setText("");
+            conversationList.scrollTo(conversationList.getItems().size() - 1);
+
         }
     }
 
@@ -62,7 +61,42 @@ public class HelloController {
     }
 
     @FXML
+    void onUserListClicked(MouseEvent event) {
+        if (event.getButton().equals(MouseButton.PRIMARY)) {
+
+            System.out.println("onUserListClicked method");
+        }
+    }
+
+
+
+    @FXML
     void initialize() {
+
+        usersList.getItems().add("Жорик");
+        usersList.getItems().add("Толик");
+        usersList.getItems().add("Жмурик");
+        usersList.getItems().add("Дурик");
+
+
+        usersList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    if(mouseEvent.getClickCount() == 2){
+                        String name = usersList.getSelectionModel().getSelectedItem();
+                        for (Tab t : tabPane.getTabs()) {
+                            if (t.getText().equals(name)) {
+                                return;
+                            }
+                        }
+                        tabPane.getTabs().add(new CompletedTab(name));
+                    }
+                }
+            }
+        });
+
+
 
     }
 }
