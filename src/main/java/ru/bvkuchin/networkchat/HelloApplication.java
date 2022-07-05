@@ -24,9 +24,7 @@ public class HelloApplication extends Application {
 
 //        вытаскиваем экземпляр контроллера из лоудера
         HelloController controller = root.getController();
-
         connection = new Connection();
-
         controller.setConnection(connection);
         connection.connect();
 
@@ -38,6 +36,8 @@ public class HelloApplication extends Application {
 
             }
         });
+
+        controller.getMessageFromInputStream();
 
 
 

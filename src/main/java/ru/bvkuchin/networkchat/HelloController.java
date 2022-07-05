@@ -97,51 +97,34 @@ public class HelloController {
             }
         });
 
-
-        Thread t = new Thread(() -> {
-            ListView<String> conversationList = null;
-
-            System.out.println("поток2 запущен");
-
-            while (tabPane.getSelectionModel().getSelectedItem() == null) {
-                try {
-                    Thread.sleep(500);
-                    System.out.println("таймер2");
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-            while (true) {
-
-                try {
-                    String message = connection.readMessage();
-                    System.out.println(message);
-cd 
-                    conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
-                    conversationList.getItems().add(message);
-                    conversationList.scrollTo(conversationList.getItems().size());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } );
-
-        t.setDaemon(true);
-
-        try {
-            t.start();
-        }  catch (Exception e) {
-            Platform.runLater(new Runnable() {
-                @Override public void run() {
-                    new Alert(Alert.AlertType.ERROR).showAndWait();
-                    Platform.exit();
-                }
-            });
-        }
     }
 
+    public void getMessageFromInputStream() {
+        Thread t = new Thread(() -> {
 
+
+            while (true) {
+                try {
+                    String message = connection.readMessage();
+
+                    final ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
+                    Platform.runLater(() -> {
+
+                        conversationList.getItems().add(message);
+                        conversationList.scrollTo(conversationList.getItems().size());
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+
+                }
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+
+
+    }
 
 
     private void clearInputField() {
