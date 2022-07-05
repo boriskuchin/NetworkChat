@@ -1,5 +1,7 @@
 package ru.bvkuchin.networkchat;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -7,6 +9,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import ru.bvkuchin.networkchat.components.CompletedTab;
+import ru.bvkuchin.networkchat.components.Connection;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,17 +33,32 @@ public class HelloController {
     @FXML
     private ListView<String> usersList;
 
+    Connection connection;
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
     @FXML
     void onSendButtonClick(ActionEvent event) {
         sendMessage();
     }
 
-    protected void sendMessage() {
+    void sendMessage() {
+        sendMessageToConversationList();
+        sendMessageToServer();
+        clearInputField();
+    }
+
+    private void sendMessageToServer() {
+        connection.sendMessage(textEnterField.getText());
+    }
+
+    protected void sendMessageToConversationList() {
         CompletedTab tab = (CompletedTab) tabPane.getSelectionModel().getSelectedItem();
         if ((textEnterField.getText().length() != 0) && (tabPane.getSelectionModel().getSelectedItem() != null)) {
             ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
             conversationList.getItems().add(String.format("%s: %n%s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
-            textEnterField.setText("");
             conversationList.scrollTo(conversationList.getItems().size() - 1);
         }
     }
@@ -78,5 +97,56 @@ public class HelloController {
             }
         });
 
+
+        Thread t = new Thread(() -> {
+            ListView<String> conversationList = null;
+
+            System.out.println("поток2 запущен");
+
+            while (tabPane.getSelectionModel().getSelectedItem() == null) {
+                try {
+                    Thread.sleep(500);
+                    System.out.println("таймер2");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+            while (true) {
+
+                try {
+                    String message = connection.readMessage();
+                    System.out.println(message);
+cd 
+                    conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
+                    conversationList.getItems().add(message);
+                    conversationList.scrollTo(conversationList.getItems().size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } );
+
+        t.setDaemon(true);
+
+        try {
+            t.start();
+        }  catch (Exception e) {
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    new Alert(Alert.AlertType.ERROR).showAndWait();
+                    Platform.exit();
+                }
+            });
+        }
     }
+
+
+
+
+    private void clearInputField() {
+        textEnterField.setText("");
+    }
+
 }
+
