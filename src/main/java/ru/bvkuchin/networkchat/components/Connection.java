@@ -7,10 +7,10 @@ public class Connection {
 
     private static final int PORT = 8186;
     private static final String SERVER_HOST = "localhost";
-    Socket socket;
+    private Socket socket;
 
-        DataInputStream inputStream;
-    DataOutputStream outputStream;
+    private DataInputStream inputStream;
+    private DataOutputStream outputStream;
 
     public Connection() {
 
@@ -22,7 +22,6 @@ public class Connection {
 
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream( socket.getOutputStream());
-
 
             System.out.println("Соединение установлено");
         } catch (IOException e) {
@@ -40,16 +39,8 @@ public class Connection {
         }
     }
 
-    public String readMessage() {
-        String message = null;
-
-        try {
-            message =  inputStream.readUTF();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-        return message;
+    public String readMessage() throws Exception{
+        return inputStream.readUTF();
     }
 
     public void closeConnection() {

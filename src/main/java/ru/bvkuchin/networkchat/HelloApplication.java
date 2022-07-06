@@ -28,7 +28,7 @@ public class HelloApplication extends Application {
         controller.setConnection(connection);
         connection.connect();
 
-//        Добавеление слушателя комбинаций на сцену
+        //        Добавеление слушателя комбинаций на сцену
         KeyCombination C_Enter = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
         stage.addEventFilter(KeyEvent.KEY_PRESSED, evt -> {
             if (C_Enter.match(evt)) {
@@ -38,8 +38,6 @@ public class HelloApplication extends Application {
         });
 
         controller.getMessageFromInputStream();
-
-
 
         stage.show();
     }

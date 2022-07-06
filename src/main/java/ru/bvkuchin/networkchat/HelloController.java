@@ -102,25 +102,22 @@ public class HelloController {
     public void getMessageFromInputStream() {
         Thread t = new Thread(() -> {
 
-
-            while (true) {
                 try {
-                    String message = connection.readMessage();
-
-                    final ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
-                    Platform.runLater(() -> {
-
-                        conversationList.getItems().add(message);
-                        conversationList.scrollTo(conversationList.getItems().size());
-                    });
+                    while (true) {
+                        String message = connection.readMessage();
+                        final ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
+                        Platform.runLater(() -> {
+                            conversationList.getItems().add(message);
+                            conversationList.scrollTo(conversationList.getItems().size());
+                        });
+                    }
                 } catch (Exception e) {
+                    System.out.println("Соединение разорвано сервером. Перезапустите сервер и подключитесь снова");
                     e.printStackTrace();
-
-
                 }
-            }
         });
-        t.setDaemon(true);
+
+
         t.start();
 
 
