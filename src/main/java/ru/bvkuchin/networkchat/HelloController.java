@@ -1,6 +1,5 @@
 package ru.bvkuchin.networkchat;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -45,7 +44,7 @@ public class HelloController {
     }
 
     void sendMessage() {
-        sendMessageToConversationList();
+//        sendMessageToConversationList();
         sendMessageToServer();
         clearInputField();
     }
@@ -105,11 +104,13 @@ public class HelloController {
                 try {
                     while (true) {
                         String message = connection.readMessage();
-                        final ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
-                        Platform.runLater(() -> {
-                            conversationList.getItems().add(message);
-                            conversationList.scrollTo(conversationList.getItems().size());
-                        });
+                        if (((CompletedTab) tabPane.getSelectionModel().getSelectedItem()) != null) {
+                            final ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
+                            Platform.runLater(() -> {
+                                conversationList.getItems().add(message);
+                                conversationList.scrollTo(conversationList.getItems().size());
+                            });
+                        }
                     }
                 } catch (Exception e) {
                     System.out.println("Соединение разорвано сервером. Перезапустите сервер и подключитесь снова");
