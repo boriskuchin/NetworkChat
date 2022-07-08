@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class Connection {
 
-    private static final int PORT = 8186;
+    private static final int PORT = 9183;
     private static final String SERVER_HOST = "localhost";
     private Socket socket;
 
