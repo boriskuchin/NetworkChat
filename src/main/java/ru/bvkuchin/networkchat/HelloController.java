@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import ru.bvkuchin.networkchat.components.CompletedTab;
 import ru.bvkuchin.networkchat.components.Connection;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +26,7 @@ public class HelloController {
     private Button sendButton;
 
     @FXML
-    private TabPane tabPane;
+    private ListView<String> convHistoryList;
 
     @FXML
     private ListView<String> usersList;
@@ -54,12 +53,8 @@ public class HelloController {
     }
 
     protected void sendMessageToConversationList() {
-        CompletedTab tab = (CompletedTab) tabPane.getSelectionModel().getSelectedItem();
-        if ((textEnterField.getText().length() != 0) && (tabPane.getSelectionModel().getSelectedItem() != null)) {
-            ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
-            conversationList.getItems().add(String.format("%s: %n%s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
-            conversationList.scrollTo(conversationList.getItems().size() - 1);
-        }
+            convHistoryList.getItems().add(String.format("%s: %n%s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
+            convHistoryList.scrollTo(convHistoryList.getItems().size() - 1);
     }
 
     @FXML
@@ -79,7 +74,7 @@ public class HelloController {
         usersList.getItems().add("Дурик");
 
 
-        usersList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+       /* usersList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
@@ -94,7 +89,7 @@ public class HelloController {
                     }
                 }
             }
-        });
+        });*/
 
     }
 
@@ -104,13 +99,10 @@ public class HelloController {
                 try {
                     while (true) {
                         String message = connection.readMessage();
-                        if (((CompletedTab) tabPane.getSelectionModel().getSelectedItem()) != null) {
-                            final ListView<String> conversationList = ((CompletedTab) tabPane.getSelectionModel().getSelectedItem()).getConvertsationHistory();
                             Platform.runLater(() -> {
-                                conversationList.getItems().add(message);
-                                conversationList.scrollTo(conversationList.getItems().size());
+                                convHistoryList.getItems().add(message);
+                                convHistoryList.scrollTo(convHistoryList.getItems().size());
                             });
-                        }
                     }
                 } catch (Exception e) {
                     System.out.println("Соединение разорвано сервером. Перезапустите сервер и подключитесь снова");
