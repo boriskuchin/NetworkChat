@@ -1,4 +1,4 @@
-package ru.bvkuchin.networkchat;
+package ru.bvkuchin.networkchat.controllers;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -54,13 +54,13 @@ public class ChatDialogController {
         sendMessage();
     }
 
-    void sendMessage() {
+   public void sendMessage() {
 //        sendMessageToConversationList();
         sendMessageToServer();
         clearInputField();
     }
 
-    private void sendMessageToServer() {
+    protected void sendMessageToServer() {
         connection.sendMessage(textEnterField.getText());
     }
 

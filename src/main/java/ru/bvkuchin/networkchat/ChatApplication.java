@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.*;
 import javafx.stage.Stage;
 import ru.bvkuchin.networkchat.components.Connection;
+import ru.bvkuchin.networkchat.controllers.ChatDialogController;
 
 import java.io.IOException;
 

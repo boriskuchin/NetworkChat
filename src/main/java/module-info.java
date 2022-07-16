@@ -5,4 +5,6 @@ module ru.bvkuchin.networkchat {
 
     opens ru.bvkuchin.networkchat to javafx.fxml;
     exports ru.bvkuchin.networkchat;
+    exports ru.bvkuchin.networkchat.controllers;
+    opens ru.bvkuchin.networkchat.controllers to javafx.fxml;
 }
