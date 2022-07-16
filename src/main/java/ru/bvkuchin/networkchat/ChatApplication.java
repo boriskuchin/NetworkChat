@@ -10,20 +10,20 @@ import ru.bvkuchin.networkchat.components.Connection;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class ChatApplication extends Application {
 
     Connection connection;
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader root = new FXMLLoader(HelloApplication.class.getResource("networkChat-view.fxml"));
+        FXMLLoader root = new FXMLLoader(ChatApplication.class.getResource("networkChat-view.fxml"));
         Parent rootPane = root.load();
         Scene scene = new Scene(rootPane);
         stage.setTitle("Network chat!");
         stage.setScene(scene);
 
 //        вытаскиваем экземпляр контроллера из лоудера
-        HelloController controller = root.getController();
+        ChatDialogController controller = root.getController();
         connection = new Connection();
         controller.setConnection(connection);
         connection.connect();
@@ -37,9 +37,9 @@ public class HelloApplication extends Application {
             }
         });
 
-        controller.getMessageFromInputStream();
 
         stage.show();
+        controller.getMessageFromInputStream();
     }
 
     public static void main(String[] args) {
