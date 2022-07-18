@@ -22,6 +22,7 @@ public class ChatApplication extends Application {
     private ChatDialogController chatDialogController;
 
 
+
     @Override
     public void start(Stage stage) throws IOException {
         chatStage = stage;
@@ -43,7 +44,7 @@ public class ChatApplication extends Application {
     private void createChatDialog() throws IOException {
         FXMLLoader chatLoader = new FXMLLoader(ChatApplication.class.getResource("networkChat-view.fxml"));
         Scene scene = new Scene(chatLoader.load());
-        chatStage.setTitle("Network chat!");
+
         chatStage.setScene(scene);
         chatStage.setAlwaysOnTop(true);
 
@@ -69,11 +70,13 @@ public class ChatApplication extends Application {
         authDialogController = authLoader.getController();
         authDialogController.setApplication(this);
         authDialogController.setConnection(connection);
+
     }
 
 
-    public void openChatDialog() {
+    public void openChatDialog(String login) {
         authStage.close();
+        chatStage.setTitle("Network chat! Login: " + login);
         chatStage.show();
         chatDialogController.getMessageFromInputStream();
     }

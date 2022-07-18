@@ -2,31 +2,27 @@ package ru.bvkuchin.networkchat.controllers;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import ru.bvkuchin.networkchat.components.Connection;
+import ru.bvkuchin.networkchat.components.Prefix;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class ChatDialogController {
 
-    private static final String AUTH_CMD_PREFIX = "/auth";
-    private static final String AUTHOK_CMD_PREFIX = "/authok";
-    private static final String AUTHERR_CMD_PREFIX = "/autherr";
-    private static final String CLIENT_MSG_CMD_PREFIX = "/cMsg";
-    private static final String SERVER_MSG_CMD_PREFIX = "/sMsg";
-    private static final String PRIVATE_MSG_CMD_PREFIX = "/pm";
-    private static final String STOP_SERVER_CMD_PREFIX = "/stop";
-    private static final String END_CLIENT_CMD_PREFIX = "/end";
-    private static final String LIST_CLIENTS_CMD_PREFIX = "/usrs";
 
+    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, ''yy HH:mm:ss", Locale.ROOT);
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, ''yy HH:mm:ss");
 
     @FXML
     private MenuItem menuItemClose;
@@ -43,7 +39,18 @@ public class ChatDialogController {
     @FXML
     private ListView<String> usersList;
 
+    @FXML
+    private MenuItem menuItemServerStop;
+
+
     Connection connection;
+    boolean isMessagePrivate = false;
+
+
+    @FXML
+    void OnServerStopButton(ActionEvent event) {
+        connection.sendMessage(Prefix.STOP_SERVER_CMD_PREFIX.getPrefix());
+    }
 
     public void setConnection(Connection connection) {
         this.connection = connection;
@@ -55,18 +62,30 @@ public class ChatDialogController {
     }
 
    public void sendMessage() {
-//        sendMessageToConversationList();
+        sendMessageToConversationList();
         sendMessageToServer();
         clearInputField();
     }
 
     protected void sendMessageToServer() {
-        connection.sendMessage(textEnterField.getText());
+        if (!isMessagePrivate) {
+
+            connection.sendMessage(String.format("%s %s", Prefix.CLIENT_MSG_CMD_PREFIX.getPrefix(), textEnterField.getText()));
+        } else {
+            String name = usersList.getSelectionModel().getSelectedItem();
+            connection.sendMessage(String.format("%s %s %s", Prefix.PRIVATE_MSG_CMD_PREFIX.getPrefix(),name, textEnterField.getText()));
+        }
     }
 
     protected void sendMessageToConversationList() {
-            convHistoryList.getItems().add(String.format("%s: %n%s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
+        if (!isMessagePrivate) {
+            convHistoryList.getItems().add(String.format("%s: %nЯ: %s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
             convHistoryList.scrollTo(convHistoryList.getItems().size() - 1);
+        } else {
+            String name = usersList.getSelectionModel().getSelectedItem();
+            convHistoryList.getItems().add(String.format("%s: %nЯ [PM] %s: %s", dateFormat.format(new Date()).toString(), name, textEnterField.getText()));
+            convHistoryList.scrollTo(convHistoryList.getItems().size() - 1);
+        }
     }
 
     @FXML
@@ -80,28 +99,26 @@ public class ChatDialogController {
     @FXML
     void initialize() {
 
-//        usersList.getItems().add("Жорик");
-//        usersList.getItems().add("Толик");
-//        usersList.getItems().add("Жмурик");
-//        usersList.getItems().add("Дурик");
-
-
-       /* usersList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+       usersList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
                     if(mouseEvent.getClickCount() == 2){
-                        String name = usersList.getSelectionModel().getSelectedItem();
-                        for (Tab t : tabPane.getTabs()) {
-                            if (t.getText().equals(name)) {
-                                return;
-                            }
+
+                        if (!isMessagePrivate) {
+                            isMessagePrivate = !isMessagePrivate;
+                            sendButton.setTextFill(Color.RED);
+                            sendButton.setText(String.format("PM %nSend"));
+                        } else {
+                            isMessagePrivate = !isMessagePrivate;
+                            sendButton.setTextFill(Color.rgb(18,162,181));
+                            sendButton.setText(String.format("Send"));
                         }
-                        tabPane.getTabs().add(new CompletedTab(name));
+
                     }
                 }
             }
-        });*/
+        });
 
     }
 
@@ -111,11 +128,29 @@ public class ChatDialogController {
                 while (true) {
                     String message = connection.readMessage();
 
-                    switch (message.split("\\s+", 2)[0]) {
+                    switch (Prefix.getPrefixFromText( message.split("\\s+", 2)[0])) {
                         case LIST_CLIENTS_CMD_PREFIX:
                             Platform.runLater(() -> {
                                 usersList.getItems().clear();
                                 usersList.getItems().addAll(message.split("\\s+", 2)[1].trim().split("\\s+"));
+                            });
+                            break;
+                        case CLIENT_MSG_CMD_PREFIX:
+                            Platform.runLater(() -> {
+                                convHistoryList.getItems().add(message.split("\\s+", 2)[1]);
+                                convHistoryList.scrollTo(convHistoryList.getItems().size());
+                            });
+                            break;
+                        case SERVER_MSG_CMD_PREFIX:
+                            Platform.runLater(() -> {
+                                convHistoryList.getItems().add("ВНИМАНИЕ! "+ message.split("\\s+", 2)[1].toUpperCase());
+                                convHistoryList.scrollTo(convHistoryList.getItems().size());
+                            });
+                            break;
+                        case PRIVATE_MSG_CMD_PREFIX:
+                            Platform.runLater(() -> {
+                                convHistoryList.getItems().add("[PM] "+ message.split("\\s+", 2)[1]);
+                                convHistoryList.scrollTo(convHistoryList.getItems().size());
                             });
                             break;
                         default:
