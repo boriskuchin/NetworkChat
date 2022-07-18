@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 import lombok.Setter;
 import ru.bvkuchin.networkchat.ChatApplication;
 import ru.bvkuchin.networkchat.components.Connection;
-import ru.bvkuchin.networkchat.components.Prefixes;
+import ru.bvkuchin.networkchat.components.Prefix;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -49,13 +49,13 @@ public class AuthDialogController {
     void onSignInPressed(ActionEvent event) throws Exception {
         String login = signInLoginField.getText();
         String password = signInPasswordField.getText();
-        connection.sendMessage(String.format("%s %s %s", Prefixes.AUTH_CMD_PREFIX.getPrefix(), login, password));
+        connection.sendMessage(String.format("%s %s %s", Prefix.AUTH_CMD_PREFIX.getPrefix(), login, password));
         String serverResponse = connection.readMessage();
         System.out.println(serverResponse);
 
-        if (serverResponse.startsWith(Prefixes.AUTHOK_CMD_PREFIX.getPrefix())) {
-            application.openChatDialog();
-        } else if (serverResponse.startsWith(Prefixes.AUTHERR_CMD_PREFIX.getPrefix())) {
+        if (serverResponse.startsWith(Prefix.AUTHOK_CMD_PREFIX.getPrefix())) {
+            application.openChatDialog(login);
+        } else if (serverResponse.startsWith(Prefix.AUTHERR_CMD_PREFIX.getPrefix())) {
 
             application.showErrorAlert("Ошибка авторизации", serverResponse.trim().split("\\s+", 2)[1]);
         } else {
@@ -69,17 +69,17 @@ public class AuthDialogController {
         String signUpPass = signUpPassField.getText();
         String signUpName = signUpNameField.getText();
 
-        connection.sendMessage(String.format("%s %s %s %s", Prefixes.NEW_USR_CMD_PREFIX.getPrefix(), signUpLogin, signUpName, signUpPass));
+        connection.sendMessage(String.format("%s %s %s %s", Prefix.NEW_USR_CMD_PREFIX.getPrefix(), signUpLogin, signUpName, signUpPass));
         String serverResponse = connection.readMessage();
         System.out.println(serverResponse);
 
-        if (serverResponse.startsWith(Prefixes.NEW_USR_OK_CMD_PREFIX.getPrefix())) {
+        if (serverResponse.startsWith(Prefix.NEW_USR_OK_CMD_PREFIX.getPrefix())) {
             application.showInfoAlert("Регистрация прошла успешно", "Залогиньтесь с вашим логином и паролем");
             signUpLoginField.setText("");
             signUpPassField.setText("");
             signUpNameField.setText("");
 
-        } else if (serverResponse.startsWith(Prefixes.NEW_USR_ERR_CMD_PREFIX.getPrefix())) {
+        } else if (serverResponse.startsWith(Prefix.NEW_USR_ERR_CMD_PREFIX.getPrefix())) {
 
             application.showErrorAlert("Ошибка регистрации", serverResponse.trim().split("\\s+", 2)[1]);
         } else {
@@ -96,4 +96,6 @@ public class AuthDialogController {
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
+
+
 }

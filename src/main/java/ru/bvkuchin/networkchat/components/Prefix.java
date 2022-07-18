@@ -1,6 +1,6 @@
 package ru.bvkuchin.networkchat.components;
 
-public enum Prefixes {
+public enum Prefix {
     AUTH_CMD_PREFIX("/auth"),
     AUTHOK_CMD_PREFIX("/authok"),
     AUTHERR_CMD_PREFIX("/autherr"),
@@ -12,17 +12,28 @@ public enum Prefixes {
     LIST_CLIENTS_CMD_PREFIX("/usrs"),
     NEW_USR_CMD_PREFIX("/new"),
     NEW_USR_OK_CMD_PREFIX("/newok"),
-    NEW_USR_ERR_CMD_PREFIX("/newerr")
+    NEW_USR_ERR_CMD_PREFIX("/newerr"),
+    NULL_CMD_PREFIX("/null")
     ;
     private String prefix;
 
-    Prefixes(String prefix) {
+    Prefix(String prefix) {
         this.prefix = prefix;
     }
 
     public String getPrefix() {
         return prefix;
     }
+
+    public static Prefix getPrefixFromText(String str) {
+        for (Prefix prefix : Prefix.values()) {
+            if (prefix.getPrefix().equals(str)) {
+                return prefix;
+            }
+        }
+        return NULL_CMD_PREFIX;
+    }
+
 }
 
 
