@@ -1,6 +1,7 @@
 module ru.bvkuchin.networkchat {
     requires javafx.controls;
     requires javafx.fxml;
+    requires lombok;
 
 
     opens ru.bvkuchin.networkchat to javafx.fxml;
