@@ -13,6 +13,7 @@ public enum Prefix {
     NEW_USR_CMD_PREFIX("/new"),
     NEW_USR_OK_CMD_PREFIX("/newok"),
     NEW_USR_ERR_CMD_PREFIX("/newerr"),
+    CNG_NAME_CMD_PREFIX("/changename"),
     NULL_CMD_PREFIX("/null")
     ;
     private String prefix;

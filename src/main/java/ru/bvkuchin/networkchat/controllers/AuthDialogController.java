@@ -54,7 +54,7 @@ public class AuthDialogController {
         System.out.println(serverResponse);
 
         if (serverResponse.startsWith(Prefix.AUTHOK_CMD_PREFIX.getPrefix())) {
-            application.openChatDialog(login);
+            application.openChatDialog(serverResponse.split("\\s+")[1]);
         } else if (serverResponse.startsWith(Prefix.AUTHERR_CMD_PREFIX.getPrefix())) {
 
             application.showErrorAlert("Ошибка авторизации", serverResponse.trim().split("\\s+", 2)[1]);
