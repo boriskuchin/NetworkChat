@@ -2,14 +2,17 @@ package ru.bvkuchin.networkchat;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.bvkuchin.networkchat.components.Connection;
-import ru.bvkuchin.networkchat.controllers.*;
+import ru.bvkuchin.networkchat.controllers.AuthDialogController;
+import ru.bvkuchin.networkchat.controllers.ChatDialogController;
 
 import java.io.IOException;
 
