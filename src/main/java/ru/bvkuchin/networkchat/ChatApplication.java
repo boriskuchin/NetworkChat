@@ -11,8 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.bvkuchin.networkchat.components.Connection;
-import ru.bvkuchin.networkchat.controllers.AuthDialogController;
-import ru.bvkuchin.networkchat.controllers.ChatDialogController;
+import ru.bvkuchin.networkchat.controllers.*;
 
 import java.io.IOException;
 
@@ -23,7 +22,8 @@ public class ChatApplication extends Application {
     private Stage authStage;
     private AuthDialogController authDialogController;
     private ChatDialogController chatDialogController;
-
+    private Stage changeNameStage;
+    private ChangeNameController changeNameDialogController;
 
 
     @Override
@@ -34,6 +34,7 @@ public class ChatApplication extends Application {
 
         openAuthDialog();
         createChatDialog();
+        createChangeNameDialog();
 
         //        Добавеление слушателя комбинаций на сцену
         KeyCombination C_Enter = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
@@ -53,6 +54,7 @@ public class ChatApplication extends Application {
 
         chatDialogController = chatLoader.getController();
         chatDialogController.setConnection(connection);
+        chatDialogController.setApplichtion(this);
 
     }
 
@@ -76,10 +78,31 @@ public class ChatApplication extends Application {
 
     }
 
+    private void createChangeNameDialog() throws IOException {
+        FXMLLoader changeNameLoader = new FXMLLoader(ChatApplication.class.getResource("changeName-view.fxml"));
+        changeNameStage = new Stage();
 
-    public void openChatDialog(String login) {
+        Scene scene = new Scene(changeNameLoader.load());
+
+        changeNameStage.setScene(scene);
+        changeNameStage.initModality(Modality.WINDOW_MODAL);
+        changeNameStage.initOwner(chatStage);
+        changeNameStage.setTitle("Change Name!");
+        changeNameStage.setAlwaysOnTop(true);
+
+
+
+        changeNameDialogController = changeNameLoader.getController();
+        changeNameDialogController.setApplication(this);
+        changeNameDialogController.setConnection(connection);
+
+    }
+    
+    
+
+        public void openChatDialog(String login) {
         authStage.close();
-        chatStage.setTitle("Network chat! Login: " + login);
+        setChatTitle(login);
         chatStage.show();
         chatDialogController.getMessageFromInputStream();
     }
@@ -104,5 +127,18 @@ public class ChatApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public void openChangeNameDialog() throws IOException {
+        changeNameStage.show();
+    }
+
+    public void closeChangeNameDialog() {
+        changeNameStage.close();
+    }
+
+    public void setChatTitle(String login) {
+        chatStage.setTitle("Network chat! Login: " + login);
+
     }
 }

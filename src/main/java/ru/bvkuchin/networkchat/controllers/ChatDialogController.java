@@ -11,9 +11,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import ru.bvkuchin.networkchat.ChatApplication;
 import ru.bvkuchin.networkchat.components.Connection;
 import ru.bvkuchin.networkchat.components.Prefix;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -42,9 +44,15 @@ public class ChatDialogController {
     @FXML
     private MenuItem menuItemServerStop;
 
+    @FXML
+    private MenuItem menuItemChangeName;
+
+
+
 
     Connection connection;
     boolean isMessagePrivate = false;
+    private ChatApplication chatApplication;
 
 
     @FXML
@@ -173,5 +181,13 @@ public class ChatDialogController {
         textEnterField.setText("");
     }
 
+    @FXML
+    void onChangeNamePressed(ActionEvent event) throws IOException {
+        chatApplication.openChangeNameDialog();
+    }
+
+    public void setApplichtion(ChatApplication chatApplication) {
+        this.chatApplication = chatApplication;
+    }
 }
 
