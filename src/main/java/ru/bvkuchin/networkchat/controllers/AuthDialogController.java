@@ -42,6 +42,8 @@ public class AuthDialogController {
     private TextField signUpPassField;
     private Connection connection;
 
+    private String login;
+
     @Setter
     private ChatApplication application;
 
@@ -54,7 +56,8 @@ public class AuthDialogController {
         System.out.println(serverResponse);
 
         if (serverResponse.startsWith(Prefix.AUTHOK_CMD_PREFIX.getPrefix())) {
-            application.openChatDialog(serverResponse.split("\\s+")[1]);
+            String name = serverResponse.split("\\s+")[1];
+            application.openChatDialog(name, login);
         } else if (serverResponse.startsWith(Prefix.AUTHERR_CMD_PREFIX.getPrefix())) {
 
             application.showErrorAlert("Ошибка авторизации", serverResponse.trim().split("\\s+", 2)[1]);
@@ -97,5 +100,7 @@ public class AuthDialogController {
         this.connection = connection;
     }
 
-
+    public String getLogin() {
+        return login;
+    }
 }

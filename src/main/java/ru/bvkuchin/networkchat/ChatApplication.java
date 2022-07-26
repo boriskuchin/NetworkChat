@@ -11,7 +11,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.bvkuchin.networkchat.components.Connection;
-import ru.bvkuchin.networkchat.controllers.*;
+import ru.bvkuchin.networkchat.controllers.AuthDialogController;
+import ru.bvkuchin.networkchat.controllers.ChangeNameController;
+import ru.bvkuchin.networkchat.controllers.ChatDialogController;
 
 import java.io.IOException;
 
@@ -91,20 +93,20 @@ public class ChatApplication extends Application {
         changeNameStage.setAlwaysOnTop(true);
 
 
-
         changeNameDialogController = changeNameLoader.getController();
         changeNameDialogController.setApplication(this);
         changeNameDialogController.setConnection(connection);
 
     }
-    
-    
 
-        public void openChatDialog(String login) {
+
+    public void openChatDialog(String name, String login) {
         authStage.close();
-        setChatTitle(login);
+        setChatTitle(name);
         chatStage.show();
+        chatDialogController.loadHistolyFromLog(login);
         chatDialogController.getMessageFromInputStream();
+        chatDialogController.setLogin(login);
     }
 
     public void showErrorAlert(String title, String errorMessage) {
