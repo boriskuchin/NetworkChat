@@ -11,14 +11,19 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import ru.bvkuchin.networkchat.ChatApplication;
 import ru.bvkuchin.networkchat.components.Connection;
 import ru.bvkuchin.networkchat.components.Prefix;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+
 
 public class ChatDialogController {
 
@@ -46,13 +51,10 @@ public class ChatDialogController {
 
     @FXML
     private MenuItem menuItemChangeName;
-
-
-
-
     Connection connection;
     boolean isMessagePrivate = false;
     private ChatApplication chatApplication;
+    private String login;
 
 
     @FXML
@@ -69,7 +71,7 @@ public class ChatDialogController {
         sendMessage();
     }
 
-   public void sendMessage() {
+    public void sendMessage() {
         sendMessageToConversationList();
         sendMessageToServer();
         clearInputField();
@@ -86,14 +88,20 @@ public class ChatDialogController {
     }
 
     protected void sendMessageToConversationList() {
+        String msg;
+        String name;
+
         if (!isMessagePrivate) {
-            convHistoryList.getItems().add(String.format("%s: %nЯ: %s", dateFormat.format(new Date()).toString(), textEnterField.getText()));
-            convHistoryList.scrollTo(convHistoryList.getItems().size() - 1);
+            msg = String.format("%s: %nЯ: %s", dateFormat.format(new Date()), textEnterField.getText());
         } else {
-            String name = usersList.getSelectionModel().getSelectedItem();
-            convHistoryList.getItems().add(String.format("%s: %nЯ [PM] %s: %s", dateFormat.format(new Date()).toString(), name, textEnterField.getText()));
-            convHistoryList.scrollTo(convHistoryList.getItems().size() - 1);
+            name = usersList.getSelectionModel().getSelectedItem();
+            msg = String.format("%s: %nЯ [PM] %s: %s", dateFormat.format(new Date()), name, textEnterField.getText());
         }
+
+        convHistoryList.getItems().add(msg);
+        saveHistory(msg);
+        convHistoryList.scrollTo(convHistoryList.getItems().size() - 1);
+
     }
 
     @FXML
@@ -135,6 +143,7 @@ public class ChatDialogController {
             try {
                 while (true) {
                     String message = connection.readMessage();
+                    System.out.println(message);
 
                     switch (Prefix.getPrefixFromText( message.split("\\s+", 2)[0])) {
                         case LIST_CLIENTS_CMD_PREFIX:
@@ -143,25 +152,8 @@ public class ChatDialogController {
                                 usersList.getItems().addAll(message.split("\\s+", 2)[1].trim().split("\\s+"));
                             });
                             break;
-                        case CLIENT_MSG_CMD_PREFIX:
-                            Platform.runLater(() -> {
-                                convHistoryList.getItems().add(message.split("\\s+", 2)[1]);
-                                convHistoryList.scrollTo(convHistoryList.getItems().size());
-                            });
-                            break;
-                        case SERVER_MSG_CMD_PREFIX:
-                            Platform.runLater(() -> {
-                                convHistoryList.getItems().add("ВНИМАНИЕ! "+ message.split("\\s+", 2)[1].toUpperCase());
-                                convHistoryList.scrollTo(convHistoryList.getItems().size());
-                            });
-                            break;
-                        case PRIVATE_MSG_CMD_PREFIX:
-                            Platform.runLater(() -> {
-                                convHistoryList.getItems().add("[PM] "+ message.split("\\s+", 2)[1]);
-                                convHistoryList.scrollTo(convHistoryList.getItems().size());
-                            });
-                            break;
                         default:
+                            saveHistory(message);
                             Platform.runLater(() -> {
                                 convHistoryList.getItems().add(message);
                                 convHistoryList.scrollTo(convHistoryList.getItems().size());
@@ -189,5 +181,59 @@ public class ChatDialogController {
     public void setApplichtion(ChatApplication chatApplication) {
         this.chatApplication = chatApplication;
     }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void loadHistolyFromLog(String login) {
+
+        ArrayList<String> convHistory = new ArrayList<>(100);
+        File chatHistoryPath = new File("src/main/resources/history");
+        File chatHistoryFile = new File(chatHistoryPath, login + ".log");
+
+        if (Files.exists(chatHistoryFile.toPath())) {
+
+            int n_lines = 100;
+            int counter = 0;
+            String line;
+            try (ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(chatHistoryFile)) {
+                while (((line = reversedLinesFileReader.readLine()) != null) && counter < n_lines) {
+                    convHistory.add(line);
+                    counter++;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            Collections.reverse(convHistory);
+
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : convHistory) {
+            sb.append(s + System.lineSeparator());
+        }
+
+        convHistoryList.getItems().add(sb.toString());
+        }
+    }
+
+    private void saveHistory(String message) {
+
+        File chatHistoryPath = new File("src/main/resources/history");
+        File chatHistoryFile = new File(chatHistoryPath, login + ".log");
+
+        String msg_to_save = message + System.lineSeparator();
+        try (FileOutputStream out = new FileOutputStream(chatHistoryFile, true)) {
+            out.write(msg_to_save.getBytes());
+            out.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
 
